@@ -1,1 +1,3 @@
-/* Replace with your SQL commands */
+
+DROP TABLE IF EXISTS drawings;
+DROP TABLE IF EXISTS tags;
