@@ -35,9 +35,9 @@ const postOneDrawing = (req, res) => {
   }
 };
 
-const getAllDrawing = (req, res) => {
+const getAllDrawings = (req, res) => {
   drawingsModel
-    .getAllDrawingQuery()
+    .getAllDrawingsQuery()
     .then((results) => {
       res.status(200).json(results);
     })
@@ -62,7 +62,7 @@ const getOneDrawing = (req, res) => {
 
 const updateOneDrawing = async (req, res) => {
   const { id } = req.params;
-  await newsModel.updateDrawingQuery(id).then(() => {
+  await newsModel.updateOneDrawingQuery(id).then(() => {
     newsModel
       .updateNewsQuery(id, req.body)
       .then((results) => {
@@ -86,7 +86,7 @@ const updateOneDrawing = async (req, res) => {
 const deleteOneDrawing = (req, res) => {
   const { id } = req.params;
   newsModel
-    .deleteDrawingQuery(id)
+    .deleteOneDrawingQuery(id)
     .then((result) => {
       if (result.affectedRows) {
         res.status(200).send('drawing deleted');

@@ -3,7 +3,7 @@ const connection = require('../db-config');
 const postOneDrawingQuery = (values) => {
   return connection.query('INSERT INTO drawings SET ?', [values]);
 };
-const getAllDrawingQuery = () => {
+const getAllDrawingsQuery = () => {
   return connection.query('SELECT * FROM drawings ORDER BY dateOfWrite desc');
 };
 const getOneDrawingQuery = (value) => {

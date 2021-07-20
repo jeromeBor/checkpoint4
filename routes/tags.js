@@ -1,17 +1,17 @@
 const express = require('express');
 const {
-  postTags,
-  getTags,
-  getOneTags,
-  updateTags,
-  deleteTags,
+  getAllTags,
+  getOneTag,
+  postOneTag,
+  updateOneTag,
+  deleteOneTag,
 } = require('../controllers/tags.js');
 
 const router = express.Router();
-router.get('/', getTags);
-router.get('/:id', getOneTags);
-router.post('/', postTags);
-router.put('/:id', updateTags);
-router.delete('/:id', deleteTags);
+router.get('/', getAllTags);
+router.get('/:id', getOneTag);
+router.post('/', postOneTag);
+router.put('/:id', updateOneTag);
+router.delete('/:id', deleteOneTag);
 
 module.exports = router;
