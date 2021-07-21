@@ -6,22 +6,22 @@ const drawingsModel = require('../models/drawings');
 const postDrawingValidationObject = {
   title: Joi.string().max(255).required(),
   imageLink: Joi.string().max(255).allow(null, ''),
-  newsContent: Joi.string().required(),
+  postContent: Joi.string(),
   dateOfWrite: Joi.number().required(),
-  tagsId: Joi.string().required(),
+  tagsId: Joi.number().integer().required(),
 };
 
 const postOneDrawing = (req, res) => {
-  const { title, imageLink, newsContent, dateOfWrite, tagsId } = req.body;
+  const { title, imageLink, postContent, dateOfWrite, tagsId } = req.body;
   const { error } = Joi.object(postDrawingValidationObject).validate(
-    { title, imageLink, newsContent, dateOfWrite, tagsId },
+    { title, imageLink, postContent, dateOfWrite, tagsId },
     { abortEarly: false }
   );
   if (error) {
     console.error(error);
     res.status(422).json({ validationErrors: error.details });
   } else {
-    newsModel
+    drawingsModel
       .postOneDrawingQuery({ ...req.body })
       .then((results) => {
         const idDrawing = results.insertId;
@@ -38,65 +38,65 @@ const postOneDrawing = (req, res) => {
 const getAllDrawings = (req, res) => {
   drawingsModel
     .getAllDrawingsQuery()
-    .then((results) => {
+    .then(([results]) => {
       res.status(200).json(results);
     })
     .catch((error) => {
-      res.status(500).send('error retrieving drawings');
-      console.log(error);
+      console.error(error);
     });
 };
 
 const getOneDrawing = (req, res) => {
   const { id } = req.params;
-  newsModel
+  drawingsModel
     .getOneDrawingQuery(id)
     .then(([results]) => {
       res.status(200).json(results);
     })
     .catch((error) => {
-      res.status(500).send('error retrieving album');
-      console.log(error);
+      console.error(error);
     });
 };
 
-const updateOneDrawing = async (req, res) => {
+const updateOneDrawing = (req, res) => {
   const { id } = req.params;
-  await newsModel.updateOneDrawingQuery(id).then(() => {
-    newsModel
-      .updateNewsQuery(id, req.body)
-      .then((results) => {
-        if (results.affectedRows === 0) {
-          throw new Error('RECORD_NOT_FOUND');
-        }
-        res.status(200).json({ ...results, ...req.body });
-      })
-      .catch((err) => {
-        console.error(err);
-        if (err.message === 'RECORD_NOT_FOUND') {
-          res.status(404).send(`drawing with id ${id} not found`);
-        }
-        if (err.message === 'INVALID_DATA') {
-          res.status(422).json({ validationErrors });
-        } else res.status(500).send('error updating a drawing');
-      });
-  });
+  drawingsModel
+    .getOneDrawingQuery(id)
+    .then(([results]) => {
+      [existingItem] = results;
+      if (!existingItem) {
+        return Promise.reject('RECORD_NOT_FOUND');
+      }
+      drawingsModel.deleteOneDrawingQuery, [req.body, id];
+    })
+    .then(() => {
+      res
+        .status(200)
+        .json({ ...existingItem, ...req.body })
+        .send('drawing succefully updated');
+    })
+    .catch((err) => {
+      console.log(err);
+      if (err === 'RECORD_NOT_FOUND') {
+        res.status(404).send(`drawing with id ${id} not found`);
+      } else res.status(500).send('error updating an drawing');
+    });
 };
 
 const deleteOneDrawing = (req, res) => {
   const { id } = req.params;
-  newsModel
+  drawingsModel
     .deleteOneDrawingQuery(id)
-    .then((result) => {
+    .then(([result]) => {
       if (result.affectedRows) {
-        res.status(200).send('drawing deleted');
+        res.status(200).send(`drawing with id ${id} deleted`);
       } else {
-        res.status(404).send('drawing not found');
+        res.status(404).send(`drawing with id ${id} not found`);
       }
     })
     .catch((error) => {
       console.error(error);
-      res.status(500).send('error deleting the drawing');
+      res.status(500).send('error deleting drawing');
     });
 };
 
