@@ -11,10 +11,10 @@ const getOneDrawingQuery = (value) => {
   return db.query('SELECT * FROM drawings WHERE id = ? ', [value]);
 };
 const updateOneDrawingQuery = (id, values) => {
-  return db.query('UPDATE drawings SET ? WHERE id = ?', [values, id]);
+  return db.query('UPDATE drawings SET ? WHERE id = ? ', [values, id]);
 };
 const deleteOneDrawingQuery = (values) => {
-  return db.query('DELETE FROM drawings WHERE id = ?', [values]);
+  return db.query('DELETE FROM drawings WHERE id = ? ', [values]);
 };
 
 module.exports = {

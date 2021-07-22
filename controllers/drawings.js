@@ -11,6 +11,15 @@ const postDrawingValidationObject = {
   tagsId: Joi.number().integer().required(),
 };
 
+const updateDrawingValidationObject = {
+  title: Joi.string().max(255),
+  idUser: Joi.number().integer(),
+  idCategory: Joi.number().integer(),
+  imageLink: Joi.string().max(255),
+  dateOfWrite: Joi.number().min(1),
+  newsContent: Joi.string(),
+};
+
 const postOneDrawing = (req, res) => {
   const { title, imageLink, postContent, dateOfWrite, tagsId } = req.body;
   const { error } = Joi.object(postDrawingValidationObject).validate(
@@ -60,26 +69,40 @@ const getOneDrawing = (req, res) => {
 
 const updateOneDrawing = (req, res) => {
   const { id } = req.params;
+  // let validationErrors = null;
   drawingsModel
     .getOneDrawingQuery(id)
-    .then(([results]) => {
-      [existingItem] = results;
-      if (!existingItem) {
-        return Promise.reject('RECORD_NOT_FOUND');
-      }
-      drawingsModel.deleteOneDrawingQuery, [req.body, id];
-    })
+    // .then((results) => {
+    //   if (!results) {
+    //     return Promise.reject('RECORD_NOT_FOUND');
+    //   }
+    //   validationErrors = Joi.object(updateDrawingValidationObject).validate(
+    //     req.body,
+    //     { abortEarly: false }
+    //   ).error;
+    //   if (validationErrors) {
+    //     return Promise.reject('INVALID_DATA');
+    //   }
+    //   return results;
+    // })
     .then(() => {
-      res
-        .status(200)
-        .json({ ...existingItem, ...req.body })
-        .send('drawing succefully updated');
-    })
-    .catch((err) => {
-      console.log(err);
-      if (err === 'RECORD_NOT_FOUND') {
-        res.status(404).send(`drawing with id ${id} not found`);
-      } else res.status(500).send('error updating an drawing');
+      drawingsModel
+        .updateOneDrawingQuery(id, req.body)
+        .then(([results]) => {
+          if (results.affectedRows === 0) {
+            throw new Error('RECORD_NOT_FOUND');
+          }
+          res.status(200).json({ ...results, ...req.body });
+        })
+        .catch((err) => {
+          console.error(err);
+          if (err.message === 'RECORD_NOT_FOUND') {
+            res.status(404).send(`Drawing with id ${id} not found`);
+          }
+          if (err.message === 'INVALID_DATA') {
+            res.status(422).json({ validationErrors });
+          } else res.status(500).send('error updating a drawing');
+        });
     });
 };
 

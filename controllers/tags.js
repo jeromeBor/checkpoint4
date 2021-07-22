@@ -68,10 +68,7 @@ const updateOneTag = (req, res) => {
       tagsModel.deleteOneDrawingQuery, [req.body, id];
     })
     .then(() => {
-      res
-        .status(200)
-        .json({ ...existingItem, ...req.body })
-        .send('tag succefully updated');
+      res.status(200).json({ ...existingItem, ...req.body });
     })
     .catch((err) => {
       console.log(err);
