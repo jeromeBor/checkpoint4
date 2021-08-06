@@ -58,24 +58,25 @@ const getOneTag = (req, res) => {
 
 const updateOneTag = (req, res) => {
   const { id } = req.params;
-  tagsModel
-    .getOneTagQuery(id)
-    .then(([results]) => {
-      [existingItem] = results;
-      if (!existingItem) {
-        return Promise.reject('RECORD_NOT_FOUND');
-      }
-      tagsModel.deleteOneDrawingQuery, [req.body, id];
-    })
-    .then(() => {
-      res.status(200).json({ ...existingItem, ...req.body });
-    })
-    .catch((err) => {
-      console.log(err);
-      if (err === 'RECORD_NOT_FOUND') {
-        res.status(404).send(`tag with id ${id} not found`);
-      } else res.status(500).send('error updating a tag');
-    });
+  tagsModel.getOneTagQuery(id).then(() => {
+    tagsModel
+      .updateOneTagQuery(id, req.body)
+      .then(([results]) => {
+        if (results.affectedRows === 0) {
+          throw new Error('RECORD_NOT_FOUND');
+        }
+        res.status(200).json({ ...results, ...req.body });
+      })
+      .catch((err) => {
+        console.error(err);
+        if (err.message === 'RECORD_NOT_FOUND') {
+          res.status(404).send(`Tag with id ${id} not found`);
+        }
+        if (err.message === 'INVALID_DATA') {
+          res.status(422).json({ validationErrors });
+        } else res.status(500).send('error updating a drawing');
+      });
+  });
 };
 
 const deleteOneTag = (req, res) => {

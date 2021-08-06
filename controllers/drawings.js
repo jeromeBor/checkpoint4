@@ -123,10 +123,23 @@ const deleteOneDrawing = (req, res) => {
     });
 };
 
+const SearchByDrawing = (req, res) => {
+  const { searchName } = req.params;
+  drawingsModel
+    .searchDrawingByName(searchName)
+    .then(([results]) => {
+      res.status(200).json(results);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
+
 module.exports = {
   getAllDrawings,
   postOneDrawing,
   getOneDrawing,
   updateOneDrawing,
   deleteOneDrawing,
+  SearchByDrawing,
 };
