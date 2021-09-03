@@ -67,6 +67,18 @@ const getOneDrawing = (req, res) => {
     });
 };
 
+const searchByDrawing = (req, res) => {
+  const { searchValue } = req.params;
+  drawingsModel
+    .searchDrawingByName(JSON.stringify(searchValue))
+    .then(([results]) => {
+      res.status(200).json(results);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
+
 const updateOneDrawing = (req, res) => {
   const { id } = req.params;
   // let validationErrors = null;
@@ -123,23 +135,11 @@ const deleteOneDrawing = (req, res) => {
     });
 };
 
-const SearchByDrawing = (req, res) => {
-  const { searchName } = req.params;
-  drawingsModel
-    .searchDrawingByName(searchName)
-    .then(([results]) => {
-      res.status(200).json(results);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-};
-
 module.exports = {
   getAllDrawings,
   postOneDrawing,
   getOneDrawing,
   updateOneDrawing,
   deleteOneDrawing,
-  SearchByDrawing,
+  searchByDrawing,
 };

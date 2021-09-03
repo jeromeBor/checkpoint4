@@ -5,13 +5,13 @@ const {
   postOneDrawing,
   updateOneDrawing,
   deleteOneDrawing,
-  SearchByDrawing,
+  searchByDrawing,
 } = require('../controllers/drawings.js');
 
 const router = express.Router();
 router.get('/', getAllDrawings);
 router.get('/:id', getOneDrawing);
-router.get('/admin/dashboard/:drawingName', SearchByDrawing);
+router.get('/:searchValue', searchByDrawing);
 router.post('/', postOneDrawing);
 router.put('/:id', updateOneDrawing);
 router.delete('/:id', deleteOneDrawing);
