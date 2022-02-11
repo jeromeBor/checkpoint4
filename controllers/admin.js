@@ -1,5 +1,6 @@
 const adminModel = require("../models/admin");
 const bcrypt = require("bcrypt");
+const { createTokens, validateToken } = require("../middleware/JWT");
 
 const getAllAdmin = (req, res) => {
   adminModel
@@ -12,10 +13,22 @@ const getAllAdmin = (req, res) => {
     });
 };
 
-const getOneAdmin = (req, res) => {
+const getOneAdminById = (req, res) => {
   const { id } = req.params;
   adminModel
-    .getOneAdminQuery(id)
+    .getOneAdminByIdQuery(id)
+    .then(([results]) => {
+      res.status(200).json(results);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
+
+const getOneAdminByMail = (req, res) => {
+  const { id } = req.params;
+  adminModel
+    .getOneAdminByIdQuery(id)
     .then(([results]) => {
       res.status(200).json(results);
     })
@@ -39,8 +52,33 @@ const postOneAdmin = (req, res) => {
       })
       .catch((err) => {
         res.status(400).json({ error: err });
-        res.status(500).send("error creating the admin");
       });
+  });
+};
+
+const loginAdmin = async (req, res) => {
+  const { mail, password } = req.body;
+  await adminModel.getOneAdminByMailQuery(mail).then(([[result]]) => {
+    if (result) {
+      console.log(result);
+      const user = result;
+      const dbPassword = user.password;
+      bcrypt.compare(password, dbPassword).then((match) => {
+        if (!match) {
+          res
+            .status(400)
+            .json({ error: "Wrong mail and password combination" });
+        } else {
+          const accessToken = createTokens(user);
+          res.cookie("access-token", accessToken, {
+            maxAge: 60 * 60 * 24 * 30 * 1000,
+          });
+          res.json("LOGGED IN");
+        }
+      });
+    } else {
+      res.status(400).json({ error: "User not found with this mail " });
+    }
   });
 };
 
@@ -61,19 +99,14 @@ const deleteOneAdmin = (req, res) => {
     });
 };
 
-// const loginAdmin = (req, res) => {
-//   adminModel.loginAdmin({ ...req.body }).then((res) => {
-//     res.status(200).json("Logged in !");
-//   });
-// };
-
 const updateOneAdmin = (req, res) => {};
 
 module.exports = {
   getAllAdmin,
   postOneAdmin,
-  //   loginAdmin,
-  getOneAdmin,
+  loginAdmin,
+  getOneAdminById,
+  getOneAdminByMail,
   updateOneAdmin,
   deleteOneAdmin,
 };

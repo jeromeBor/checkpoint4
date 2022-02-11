@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -8,6 +9,8 @@ const port = process.env.PORT || 4000;
 app.use(express.json());
 app.use(cors());
 app.use(`/upload`, express.static(`upload`));
+app.use(cookieParser());
+
 const drawingsRouter = require("./routes/drawings");
 const tagsRouter = require("./routes/tags");
 const adminRouter = require("./routes/admin");

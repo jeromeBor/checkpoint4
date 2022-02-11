@@ -4,8 +4,13 @@ const db = connection.promise();
 const getAllAdminQuery = () => {
   return db.query("SELECT * FROM admin");
 };
-const getOneAdminQuery = (value) => {
+const getOneAdminByIdQuery = (value) => {
   return db.query("SELECT * FROM admin WHERE id = ? ", [value]);
+};
+const getOneAdminByMailQuery = (value) => {
+  return db.query("SELECT mail, password, role FROM admin WHERE mail = ? ", [
+    value,
+  ]);
 };
 const postOneAdminQuery = (values) => {
   return db.query("INSERT INTO admin SET ?", [values]);
@@ -16,15 +21,16 @@ const updateOneAdminQuery = (id, values) => {
 const deleteOneAdminQuery = (values) => {
   return db.query("DELETE FROM admin WHERE id = ? ", [values]);
 };
-// const loginAdmin = (values) => {
-//   return db.query("SELECT * FROM admin WHERE mail = ?", [values]);
-// };
+const loginAdminQuery = (value) => {
+  return db.query("SELECT id, mail, role FROM admin WHERE mail = ? ", [value]);
+};
 
 module.exports = {
   getAllAdminQuery,
-  getOneAdminQuery,
+  getOneAdminByMailQuery,
+  getOneAdminByIdQuery,
   postOneAdminQuery,
-  //   loginAdmin,
+  loginAdminQuery,
   updateOneAdminQuery,
   deleteOneAdminQuery,
 };
