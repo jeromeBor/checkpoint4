@@ -1,8 +1,9 @@
 /* eslint-disable radix */
 /* eslint-disable prefer-promise-reject-errors */
 const Joi = require("joi");
+const multer = require("../middleware/multer");
+
 const drawingsModel = require("../models/drawings");
-// const multer = require("multer");
 
 const postDrawingValidationObject = {
   title: Joi.string().max(255).required(),
@@ -12,38 +13,13 @@ const postDrawingValidationObject = {
   tagsId: Joi.number().integer().required(),
 };
 
-const updateDrawingValidationObject = {
-  title: Joi.string().max(255),
-  idUser: Joi.number().integer(),
-  idCategory: Joi.number().integer(),
-  imageLink: Joi.string().max(255),
-  dateOfWrite: Joi.number().min(1),
-  newsContent: Joi.string(),
-};
-
-// const storage = multer.diskStorage({
-// destination(req, file, cb) {
-// if (
-//   file.mimetype == "image/png" ||
-//   file.mimetype == "image/jpg" ||
-//   file.mimetype == "image/jpeg"
-// ) {
-//   cb(null, `${file.originalname}`);
-// } else {
-//   cb(null, false);
-//   return cb(new Error("Only .png, .jpg and .jpeg format allowed!"));
-// }
-// },
-// destination(req, file, cb) {
-//   cb(null, "upload");
-//   // req.file.path
-// },
-// filename(req, file, cb) {
-//   cb(null, `${file.originalname}`);
-// },
-// });
-
-// const upload = multer({ storage }).single("file");
+// const updateDrawingValidationObject = {
+//   title: Joi.string().max(255),
+//   // imageLink: Joi.string().max(255),
+//   postContent: Joi.string(),
+//   dateOfWrite: Joi.number(),
+//   tagsId: Joi.number().integer(),
+// };
 
 const postOneDrawing = (req, res) => {
   const { title, imageLink, postContent, dateOfWrite, tagsId } = req.body;
@@ -60,8 +36,6 @@ const postOneDrawing = (req, res) => {
       .then((results) => {
         const idDrawing = results[0].insertId;
         const createdDrawing = { idDrawing, ...req.body };
-        console.log("created : ", createdDrawing);
-
         res.status(201).json(createdDrawing);
       })
       .catch((err) => {
@@ -115,14 +89,14 @@ const updateOneDrawing = async (req, res) => {
       if (!results) {
         return Promise.reject("RECORD_NOT_FOUND");
       }
-      validationErrors = Joi.object(updateDrawingValidationObject).validate(
-        req.body,
-        { abortEarly: false }
-      ).error;
-      if (validationErrors) {
-        return Promise.reject("INVALID_DATA");
-      }
-      return results;
+      // validationErrors = Joi.object(updateDrawingValidationObject).validate(
+      //   req.body,
+      //   { abortEarly: false }
+      // ).error;
+      // if (validationErrors) {
+      //   return Promise.reject("INVALID_DATA");
+      // }
+      // return results;
     })
     .then(() => {
       drawingsModel
@@ -162,22 +136,30 @@ const deleteOneDrawing = (req, res) => {
     });
 };
 
-// const uploadImage = (req, res) => {
-//   upload(req, res, (err) => {
-//     if (err instanceof multer.MulterError) {
-//       console.error(err);
-//       res.status(500).json(err);
-//     } else if (err) {
-//       console.error(err);
-//       res.status(500).json(err);
-//     } else {
-//       const { id } = req.params;
-//       const { path } = req.file;
-//       updateOneDrawing(id, { imageLink: path });
-//       res.status(200).send(req.file);
-//     }
-//   });
-// };
+const uploadSingleImage = (req, res) => {
+  multer.upload(req, res, (err) => {
+    if (err instanceof multer.multer.MulterError) {
+      console.error(err);
+      res.status(500).json(err);
+    } else if (err) {
+      console.error(err);
+      res.status(500).json(err);
+    } else {
+      const { id } = req.params;
+      const { path } = req.file;
+      drawingsModel.updateOneDrawingQuery(id, { imageLink: path });
+      console.log(path);
+      res.status(200).send(req.file);
+    }
+  });
+};
+
+const getSingleImage = (req, res) => {
+  const { filename } = req.params;
+  const dirname = path.resolve();
+  const fullfillpath = path.join(dirname, "upload/" + filename);
+  return res.sendFile(fullfillpath);
+};
 
 module.exports = {
   getAllDrawings,
@@ -186,5 +168,6 @@ module.exports = {
   updateOneDrawing,
   deleteOneDrawing,
   searchByDrawing,
-  // uploadImage,
+  uploadSingleImage,
+  getSingleImage,
 };

@@ -8,13 +8,13 @@ const port = process.env.PORT || 4000;
 app.use(express.json());
 app.use(cors());
 app.use(`/upload`, express.static(`upload`));
-// app.use(express.static("upload"));
-// app.use("/upload", express.static(process.cwd() + "/fileuploads")); // app.use(express.static("upload"));
 const drawingsRouter = require("./routes/drawings");
 const tagsRouter = require("./routes/tags");
+const adminRouter = require("./routes/admin");
 
 app.use("/drawings", drawingsRouter);
 app.use("/tags", tagsRouter);
+app.use("/admin", adminRouter);
 
 app.listen(port, (error) => {
   if (error) {

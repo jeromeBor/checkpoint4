@@ -3,6 +3,14 @@ id INT NOT NULL AUTO_INCREMENT,
 title VARCHAR(150) NOT NULL,
 PRIMARY KEY (id));
 
+CREATE TABLE admin (
+	id INT NOT NULL AUTO_INCREMENT,
+	mail VARCHAR(20) NOT NULL,
+	password VARCHAR(20) NOT NULL,
+	role INT NOT NULL,
+	PRIMARY KEY (id)
+);
+
 CREATE TABLE drawings (
   id INT NOT NULL AUTO_INCREMENT,
   title VARCHAR(250) NOT NULL,
@@ -11,10 +19,13 @@ CREATE TABLE drawings (
   dateOfWrite BIGINT NOT NULL,
   tagsId INT,
   PRIMARY KEY (id),
-  FOREIGN KEY (tagsId) REFERENCES tags(id));
+  FOREIGN KEY (tagsId) REFERENCES tags(id)
+);
 
   
 INSERT INTO tags(title) VALUES('Aquarelle'),('Marqueur alcool'),('Digital Painting'),('Autres');
+
+
 
 INSERT INTO drawings(title, imageLink, postContent,dateOfWrite,tagsId )
   VALUES
@@ -25,5 +36,4 @@ INSERT INTO drawings(title, imageLink, postContent,dateOfWrite,tagsId )
   ("Girafe", "https://mir-s3-cdn-cf.behance.net/project_modules/2800_opt_1/4e7abd106802215.5f98549a2eeba.jpg", "Les animaux de la savane sont fascinant et les girafes le sont encoreplus avec leurs tâches improbable et leurs long cou.",1626772290, 2),
   ("Grassland", "https://scontent-cdt1-1.xx.fbcdn.net/v/t1.15752-9/217535748_527580361685275_715762608654414004_n.jpg?_nc_cat=105&ccb=1-3&_nc_sid=ae9488&_nc_ohc=FqixNB_69oYAX-JxWgy&_nc_ht=scontent-cdt1-1.xx&oh=f2946fb6e1f0805d151a3d148a8f0949&oe=60FAAB1C", "Exercice de recopie pour m'entrainer d'un artiste qui fait des paysage vraiment très beau et paisaible.",1626772300,1);
   ("Speed Painting", "https://scontent-cdt1-1.xx.fbcdn.net/v/t1.15752-9/217535748_527580361685275_715762608654414004_n.jpg?_nc_cat=105&ccb=1-3&_nc_sid=ae9488&_nc_ohc=FqixNB_69oYAX-JxWgy&_nc_ht=scontent-cdt1-1.xx&oh=f2946fb6e1f0805d151a3d148a8f0949&oe=60FAAB1C", "Speed painting produit en 15 min à partir d'une image existante (https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/2ac07731362309.564cec6cbe77f.jpg)",1626772350, 3);
-
 
