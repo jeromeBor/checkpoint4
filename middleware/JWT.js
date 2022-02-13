@@ -3,7 +3,8 @@ const { sign, verify } = require("jsonwebtoken");
 const createTokens = (user) => {
   const accesToken = sign(
     { usermail: user.mail, role: user.role },
-    "7bbf207521ad7b523e32d859a8b1b96511f73109c5cab1167d94fc8808d4f49e"
+    process.env.JWT_ACCESS_TOKEN_SERCRET,
+    { expiresIn: "15m" }
   );
   return accesToken;
 };
@@ -16,7 +17,7 @@ const validateToken = (req, res, next) => {
   try {
     const validToken = verify(
       accessToken,
-      "7bbf207521ad7b523e32d859a8b1b96511f73109c5cab1167d94fc8808d4f49e"
+      process.env.JWT_ACCESS_TOKEN_SERCRET
     );
     if (validToken) {
       req.authenticated = true;

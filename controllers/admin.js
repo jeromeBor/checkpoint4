@@ -70,10 +70,7 @@ const loginAdmin = async (req, res) => {
             .json({ error: "Wrong mail and password combination" });
         } else {
           const accessToken = createTokens(user);
-          res.cookie("access-token", accessToken, {
-            maxAge: 60 * 60 * 24 * 30 * 1000,
-          });
-          res.json("LOGGED IN");
+          res.json({ ...result, token: accessToken });
         }
       });
     } else {
